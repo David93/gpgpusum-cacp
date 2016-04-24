@@ -21,11 +21,9 @@ void gpgpu_sim::tw_store_oracle_cpl() const
   char cpl_name[50];
   strcpy(cpl_name, m_shader_config->gpgpu_scheduler_string);
   strcat(cpl_name, ".cpl");
-  if (!m_shader_stats->tw_if_with_oracle_cpl()){
-    FILE* fp = fopen(cpl_name, "w");
-    m_shader_stats->tw_store_oracle_cpl(fp);
-    fclose(fp);
-  }
+  FILE* fp = fopen(cpl_name, "w");
+  m_shader_stats->tw_store_oracle_cpl(fp);
+  fclose(fp);
 }
 void gpgpu_sim::tw_load_oracle_cpl()
 {
