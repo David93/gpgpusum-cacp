@@ -10,7 +10,7 @@
  ****  04/07/16                                       ****
  *********************************************************/
 #include "shader.h"
-#define CRIT_PCT 0.5
+#define CRIT_PCT 1
 #define PARTITION_PCT 50
 void simt_core_cluster::print_CACP_stats() const
 {
@@ -35,7 +35,7 @@ void ldst_unit::print_CACP_stats() const
        min=m_warp.at(index).tw_get_CPL();
    }
    for (long index=0; index<(long)m_warp.size(); ++index) 
-     if((m_warp.at(index).tw_get_CPL()-min)/(max-min)>CRIT_PCT){
+     if((m_warp.at(index).tw_get_CPL()-min)/(max-min)>=CRIT_PCT){
        m_warp.at(index).criticality=true;
      }
      else
@@ -78,7 +78,7 @@ l1_cache_cacp::access( new_addr_type addr,
     = process_tag_probe( wr, probe_status, addr, cache_index, mf, time, events );
   m_stats.inc_stats(mf->get_access_type(),
 		    m_stats.select_stats_status(probe_status, access_status));
-  m_cacp_stats->dj_record_stats(mf->req_criticality, probe_status, critical_eviction, zero_reuse, correct_prediction);
+  m_cacp_stats->dj_record_stats(mf->req_criticality, m_stats.select_stats_status(probe_status, access_status), critical_eviction, zero_reuse, correct_prediction);
   return access_status;
 }
 void l1_cache_cacp::print_CACP_stats() const
@@ -93,13 +93,17 @@ void cache_cacp_stats::dj_record_stats(bool critical, enum cache_request_status 
     if (status == HIT){// || status == HIT_RESERVED){ // TODO: HIT_RESERVED
       dj_total_crit_hit++;
     }
-    dj_total_crit_access++;
+    if (status == HIT || status == MISS || status == HIT_RESERVED){
+      dj_total_crit_access++;
+    }
   }
   //Record total accesses
   if (status == HIT){
     dj_total_hit++;
   }
-  dj_total_access++;
+  if (status == HIT || status == MISS || status == HIT_RESERVED){
+    dj_total_access++;
+  }
   //Record zero reuses
   if (critical_eviction){
     if (zero_reuse)
@@ -107,8 +111,10 @@ void cache_cacp_stats::dj_record_stats(bool critical, enum cache_request_status 
     dj_critical_evictions++;
   }
   //Record CCBP accuracy
-  if (correct)
-    dj_CCBP_correct++;
+  if (status == HIT || status == MISS || status == HIT_RESERVED){
+    if (correct)
+      dj_CCBP_correct++;
+  }
 }
 void cache_cacp_stats::dj_print_stats() const
 {
