@@ -248,7 +248,6 @@ enum cache_request_status tag_array_CACP::probe( new_addr_type addr, unsigned &i
       correct_prediction = !critical;
     }
     unsigned invalid_line = (unsigned)-1;
-    unsigned valid_line = (unsigned)-1;
     bool all_reserved = true;
     for (way=start_way; way<end_way; way++) {
       unsigned index = set_index*m_config.m_assoc+way;
@@ -292,10 +291,8 @@ enum cache_request_status tag_array_CACP::probe( new_addr_type addr, unsigned &i
     if ( invalid_line != (unsigned)-1 ) {
 	//line with RRPV=3 found, replace it.
         idx = invalid_line;
-	SHiP[signature]=2; //Add this also maybe? Need to confirm/experiment with signature behaviour.
-	m_lines[idx].sig=signature;
-    } else if ( valid_line != (unsigned)-1) {
-        idx = valid_line;
+	SHiP[signature] = 2; //Add this also maybe? Need to confirm/experiment with signature behaviour.
+	m_lines[idx].sig = signature;
     } else abort(); // if an unreserved block exists, it is either invalid or replaceable 
     
     //call CACP eviction function in extended object.
