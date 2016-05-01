@@ -43,7 +43,8 @@ for i in range(len(sys.argv)-1):
     #print critical hits
     crit_hits = find_sum(contents, 'Critical Hit: [\d]+,', 'int')
 #    crit_access = find_sum(contents, 'Total Access: [\d]+', 'int')
-    print "critical hits %d" % crit_hits
+    if crit_access > 0:
+        print "critical hits %d" % crit_hits
     #print zero reuse
     zero_evict = find_sum(contents, 'Zero eviction: [\d]+', 'int')
     crit_evict = find_sum(contents, 'Critical eviction: [\d]+', 'int')

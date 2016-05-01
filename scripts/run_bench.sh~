@@ -15,7 +15,7 @@ run_bench()
 	    then
 		if [ "$6" = "yes" ]
 		then
-		    if [ "$9" = "no" ]
+		    if [ "$9" = "yes" ]
 		    then
 			OUT=results.$4.\(cacp\).txt
 		    else
